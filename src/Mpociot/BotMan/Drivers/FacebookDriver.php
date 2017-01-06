@@ -148,11 +148,9 @@ class FacebookDriver extends Driver
             $recipients = [/* get the recipient from current conversation context */];
         }
 
-        $parameters = [
-            'message' => is_string($payload)
-                            ? ['text' => $payload]
-                            : $payload,
-        ];
+        $parameters = is_string($payload)
+                        ? ['message' => ['text' => $payload]]
+                        : $payload;
 
         $parameters['access_token'] = $this->config->get('facebook_token');
 
