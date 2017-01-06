@@ -269,6 +269,21 @@ class BotMan
         return $this;
     }
 
+    public function send($payload, $driver = null, ...$recipients)
+    {
+        if (is_null($driver)) {
+            $drivers = DriverManager::getConfiguredDrivers($this->config);
+        } else {
+            $drivers = [DriverManager::loadFromName($driver, $this->config)];
+        }
+
+        foreach ($drivers as $driver) {
+            $driver->send($payload, ...$recipients);
+        }
+
+        return $this;
+    }
+
     /**
      * @param string|Question $message
      * @param array $additionalParameters

@@ -12,6 +12,9 @@ use Mpociot\BotMan\Messages\Message as IncomingMessage;
 
 class FacebookDriver extends Driver
 {
+    /** @var string */
+    protected $api_endpoint = 'https://graph.facebook.com/v2.6/me/messages';
+
     /** @var Collection|ParameterBag */
     protected $payload;
 
@@ -137,6 +140,33 @@ class FacebookDriver extends Driver
         ];
     }
 
+    public function send($payload, ...$recipients)
+    {
+        if (empty($recipients)) {
+            throw new \Exception('Implement implicit recipient (replying in conversation');
+
+            $recipients = [/* get the recipient from current conversation context */];
+        }
+
+        $payload = [
+            'message' => is_string($payload)
+                            ? ['text' => $payload]
+                            : $payload,
+        ];
+
+        $payload['access_token'] = $this->config->get('facebook_token');
+
+        foreach ($recipients as $recipient) {
+            $payload['recipient'] = [
+                'id' => $recipient,
+            ];
+
+            $this->http->post($this->api_endpoint, [], $payload);
+        }
+
+        return $this;
+    }
+
     /**
      * @param string|Question|IncomingMessage $message
      * @param Message $matchingMessage
@@ -175,7 +205,7 @@ class FacebookDriver extends Driver
 
         $parameters['access_token'] = $this->config->get('facebook_token');
 
-        return $this->http->post('https://graph.facebook.com/v2.6/me/messages', [], $parameters);
+        return $this->http->post($this->api_endpoint, [], $parameters);
     }
 
     /**
