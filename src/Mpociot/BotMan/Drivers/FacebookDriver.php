@@ -148,20 +148,20 @@ class FacebookDriver extends Driver
             $recipients = [/* get the recipient from current conversation context */];
         }
 
-        $payload = [
+        $parameters = [
             'message' => is_string($payload)
                             ? ['text' => $payload]
                             : $payload,
         ];
 
-        $payload['access_token'] = $this->config->get('facebook_token');
+        $parameters['access_token'] = $this->config->get('facebook_token');
 
         foreach ($recipients as $recipient) {
-            $payload['recipient'] = [
+            $parameters['recipient'] = [
                 'id' => $recipient,
             ];
 
-            $this->http->post($this->api_endpoint, [], $payload);
+            $this->http->post($this->api_endpoint, [], $parameters);
         }
 
         return $this;
